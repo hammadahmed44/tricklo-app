@@ -11,7 +11,15 @@ const mongoose = require('mongoose');
 // because middleware verifies user is a member of the workspace before any operation.
 
 const workspaceSchema = new mongoose.Schema({
-  // AI implements on Day 4
-});
+  name:   { type: String, required: true, trim: true },
+  slug:   { type: String, unique: true, lowercase: true, trim: true },
+  owner:  { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  members: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    role: { type: String, enum: ['admin', 'member'], default: 'member' },
+  }],
+  logo:        { type: String, default: '' },
+  inviteToken: { type: String, default: null },
+}, { timestamps: true });
 
 module.exports = mongoose.model('Workspace', workspaceSchema);

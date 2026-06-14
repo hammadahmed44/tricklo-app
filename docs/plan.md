@@ -913,4 +913,51 @@ RBAC foundation — admin vs member roles
 Adjusted timeline — you have 16 days left until Jun 30. Still completely doable if you hit one feature per day from here. Don't skip days.
 
 Start Workspace model tomorrow morning.
+The owner is set when the workspace is created — from req.user.id which comes from auth middleware.
+
+The flow
+
+Hammad logs in
+    ↓
+auth middleware runs → req.user = { id: "685d1a...", name: "hammad4" }
+    ↓
+Hammad calls POST /api/workspaces  { name: "DataQ" }
+    ↓
+workspace service creates:
+{
+  name: "DataQ",
+  owner: req.user.id   ← "685d1a..." — Hammad's ID automatically
+}
+In the service you'll write
+
+const createWorkspace = async (userId, { name }) => {
+  const workspace = await Workspace.create({
+    name,
+    owner: userId,        // ← whoever is logged in becomes owner
+    members: [{
+      user: userId,       // ← also added as first member
+      role: 'admin'       // ← with admin role
+    }]
+  });
+  return workspace;
+};
+In the controller
+
+createWorkspace: async (req, res) => {
+  const workspace = await workspaceService.createWorkspace(req.user.id, req.body);
+  return created(res, workspace, 'Workspace created');
+}
+Visual
+
+Users in DB:
+  "685d1a..." → hammad4
+  "786e2b..." → ali
+  "897f3c..." → ahmed
+
+Hammad creates workspace → owner: "685d1a..."  ✅
+Ali creates workspace    → owner: "786e2b..."  ✅
+Ahmed creates workspace  → owner: "897f3c..."  ✅
+Each user who creates a workspace automatically becomes its owner. You never manually set the owner — it always comes from the logged-in user via req.user.id.
+
+Now write the workspace service. createWorkspace first.
 
