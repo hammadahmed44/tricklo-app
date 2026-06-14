@@ -14,7 +14,7 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose: unique index violated (duplicate email, slug, etc.)
   if (err.code === 11000) {
-    statusCode = 409;
+    statusCode = 409; 
     const field = Object.keys(err.keyValue)[0];
     message = `${field} already exists`;
   }

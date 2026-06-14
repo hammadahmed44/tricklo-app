@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const healthRoutes = require('./routes/health.routes');
+const authRoutes = require('./routes/auth.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -32,7 +33,7 @@ app.use(cookieParser()); // needed to read req.cookies for refresh token
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.use('/api/health', healthRoutes);
 
-// TODO Day 2: app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 // TODO Day 4: app.use('/api/workspaces', workspaceRoutes);
 // TODO Day 5: app.use('/api/boards', boardRoutes);
 // TODO Day 5: app.use('/api/lists', listRoutes);

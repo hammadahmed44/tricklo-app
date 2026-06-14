@@ -21,11 +21,11 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
  name:{type:String,required:true,trim:true},
-  email:{tyep:String,required:true,unique:true,lowercase:true,trim:true},
-  password:{type:String,required:true,miminlength: 6, select: false },
+  email:{type:String,required:true,unique:true,lowercase:true,trim:true},
+  password:{type:String,required:true,minlength: 6, select: false },
   avatar:{type:String,default:''},
     refreshToken:{type:String,default:null},
-  isverified:{type:Boolean,default:false},
+  isVerified:{type:Boolean,default:false},
   resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
     
