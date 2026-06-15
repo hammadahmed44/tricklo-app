@@ -1,13 +1,12 @@
 // TODO Day 4 — YOU wire the routes
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
+const workspaceController = require('../controllers/workspace.controller');
 
-// All routes protected by auth middleware
-// POST   /api/workspaces
-// GET    /api/workspaces
-// GET    /api/workspaces/:id
-// PUT    /api/workspaces/:id
-// POST   /api/workspaces/:id/invite
-// GET    /api/workspaces/join/:token
+router.post('/',   auth, workspaceController.createWorkspace);
+router.get('/',    auth, workspaceController.getMyWorkspaces);
+router.get('/:id', auth, workspaceController.getWorkspaceById);
+router.put('/:id', auth, workspaceController.updateWorkspace);
 
 module.exports = router;

@@ -21,5 +21,9 @@ const workspaceSchema = new mongoose.Schema({
   logo:        { type: String, default: '' },
   inviteToken: { type: String, default: null },
 }, { timestamps: true });
-
+ workspaceSchema.pre('save',function(next) {
+  if (this.isNew) {
+    this.slug = this.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+  }  next();
+ })
 module.exports = mongoose.model('Workspace', workspaceSchema);

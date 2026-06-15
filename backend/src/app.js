@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 
 const healthRoutes = require('./routes/health.routes');
 const authRoutes = require('./routes/auth.routes');
+const workspaceRoutes = require('./routes/workspace.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -34,7 +35,8 @@ app.use(cookieParser()); // needed to read req.cookies for refresh token
 app.use('/api/health', healthRoutes);
 
 app.use('/api/auth', authRoutes);
-// TODO Day 4: app.use('/api/workspaces', workspaceRoutes);
+// TODO Day 4: 
+app.use('/api/workspaces', workspaceRoutes);
 // TODO Day 5: app.use('/api/boards', boardRoutes);
 // TODO Day 5: app.use('/api/lists', listRoutes);
 // TODO Day 6: app.use('/api/cards', cardRoutes);

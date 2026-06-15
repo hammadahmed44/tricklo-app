@@ -888,76 +888,38 @@ Day 2 — Jun 9 — Auth APIs (register, login, logout, refresh) ✅
 Day 3 — Jun 13 — Auth middleware + error handler + Zod + rate limiter ✅
 You took a few days gap between Day 2 and Day 3. Today is Jun 14 — you're on track, just slightly behind. Not a problem.
 
-Tomorrow — Day 4
-Build: Workspace model + APIs
+Tomorrow — Day 5
+Workspace interview questions — answer out loud tonight
+1. What is multi-tenancy and how did you implement it?
+
+2. Why is members array embedded in workspace instead of a separate collection?
+
+3. What is the difference between owner field and members array?
+
+4. What does .populate() do and when do you use it?
+
+5. Why m.user.toString() when comparing ObjectIds?
+
+6. What is Object.assign and why use it instead of findByIdAndUpdate?
+
+7. Why check admin role in service, not in middleware?
+
+8. What is a pre-save hook and what did you use it for?
+
+9. What is a slug and why is it unique?
+
+10. How does Workspace.find({'members.user': userId}) work?
+
+Tomorrow — Day 5
+Build: Board + List models + APIs + RBAC middleware
 
 
-POST /api/workspaces          create workspace
-GET  /api/workspaces          get my workspaces  
-GET  /api/workspaces/:id      get one workspace
-PUT  /api/workspaces/:id      update workspace
-POST /api/workspaces/:id/invite   send invite
-GET  /api/workspaces/join/:token  accept invite
-This is the first time you use auth middleware on real routes — every workspace route is protected.
+Board model    → workspace ref, members, visibility, background
+List model     → board ref, position (fractional indexing)
+Board APIs     → CRUD + get boards in workspace
+List APIs      → create, rename, delete, reorder
+RBAC middleware → checkRole('admin') for protected actions
+This is the biggest day — RBAC is HIGH priority interview topic.
 
-What you build tomorrow in order
-models/Workspace.js — schema with members array, invite token
-services/workspace.service.js — all business logic
-controllers/workspace.controller.js — thin, calls service
-routes/workspace.routes.js — all protected with auth middleware
-Interview topics to study tomorrow evening
-Multi-tenancy — how workspaceId isolates data
-MongoDB embed vs reference — members array design
-Invite token pattern — crypto.randomBytes
-RBAC foundation — admin vs member roles
-Adjusted timeline — you have 16 days left until Jun 30. Still completely doable if you hit one feature per day from here. Don't skip days.
-
-Start Workspace model tomorrow morning.
-The owner is set when the workspace is created — from req.user.id which comes from auth middleware.
-
-The flow
-
-Hammad logs in
-    ↓
-auth middleware runs → req.user = { id: "685d1a...", name: "hammad4" }
-    ↓
-Hammad calls POST /api/workspaces  { name: "DataQ" }
-    ↓
-workspace service creates:
-{
-  name: "DataQ",
-  owner: req.user.id   ← "685d1a..." — Hammad's ID automatically
-}
-In the service you'll write
-
-const createWorkspace = async (userId, { name }) => {
-  const workspace = await Workspace.create({
-    name,
-    owner: userId,        // ← whoever is logged in becomes owner
-    members: [{
-      user: userId,       // ← also added as first member
-      role: 'admin'       // ← with admin role
-    }]
-  });
-  return workspace;
-};
-In the controller
-
-createWorkspace: async (req, res) => {
-  const workspace = await workspaceService.createWorkspace(req.user.id, req.body);
-  return created(res, workspace, 'Workspace created');
-}
-Visual
-
-Users in DB:
-  "685d1a..." → hammad4
-  "786e2b..." → ali
-  "897f3c..." → ahmed
-
-Hammad creates workspace → owner: "685d1a..."  ✅
-Ali creates workspace    → owner: "786e2b..."  ✅
-Ahmed creates workspace  → owner: "897f3c..."  ✅
-Each user who creates a workspace automatically becomes its owner. You never manually set the owner — it always comes from the logged-in user via req.user.id.
-
-Now write the workspace service. createWorkspace first.
+Good work today. Answer those 10 questions out loud before sleep.
 
