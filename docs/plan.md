@@ -888,38 +888,32 @@ Day 2 — Jun 9 — Auth APIs (register, login, logout, refresh) ✅
 Day 3 — Jun 13 — Auth middleware + error handler + Zod + rate limiter ✅
 You took a few days gap between Day 2 and Day 3. Today is Jun 14 — you're on track, just slightly behind. Not a problem.
 
-Tomorrow — Day 5
-Workspace interview questions — answer out loud tonight
-1. What is multi-tenancy and how did you implement it?
+Tomorrow — Day 5 night 
+Good catch needed fixing. Now here's the plan — per your project's folder structure (docs/plan.md line 219-239), List has no separate service/controller — list logic lives inside board.service.js and board.controller.js. Only the route file is separate (list.routes.js), but it calls into the same board controller.
 
-2. Why is members array embedded in workspace instead of a separate collection?
+Build order:
 
-3. What is the difference between owner field and members array?
+board.service.js — write 8 functions:
 
-4. What does .populate() do and when do you use it?
+createBoard(userId, workspaceId, {name}) — check user is workspace member first, then create
+getBoardById(boardId, userId)
+updateBoard(boardId, updates)
+archiveBoard(boardId)
+getBoardsByWorkspace(workspaceId)
+createList(boardId, {name}) — calculate position (fractional indexing)
+updateList(listId, updates) — rename
+archiveList(listId)
+reorderList(listId, newPosition)
+board.controller.js — thin wrappers calling the above (same pattern as workspace.controller.js)
 
-5. Why m.user.toString() when comparing ObjectIds?
+board.routes.js — wire with auth + checkBoardRole/checkWorkspaceRole
 
-6. What is Object.assign and why use it instead of findByIdAndUpdate?
+list.routes.js — wire list endpoints, pointing to the same boardController functions (e.g. boardController.createList)
 
-7. Why check admin role in service, not in middleware?
+One gotcha to think about before you write createBoard:
 
-8. What is a pre-save hook and what did you use it for?
+A board doesn't exist yet when you're creating it — so checkBoardRole (which looks up req.params.id as a Board) won't work on POST /api/boards. You need checkWorkspaceRole there instead, reading workspaceId from req.body, not req.params.id. Your current checkWorkspaceRole only reads req.params.id — you may need a small tweak for this one route, or pass the workspace id in params too (e.g. POST /api/workspaces/:id/boards).
 
-9. What is a slug and why is it unique?
+Want to decide that route shape now (params vs body for workspaceId), or start writing board.service.js and hit this when you get there?
 
-10. How does Workspace.find({'members.user': userId}) work?
-
-Tomorrow — Day 5
-Build: Board + List models + APIs + RBAC middleware
-
-
-Board model    → workspace ref, members, visibility, background
-List model     → board ref, position (fractional indexing)
-Board APIs     → CRUD + get boards in workspace
-List APIs      → create, rename, delete, reorder
-RBAC middleware → checkRole('admin') for protected actions
-This is the biggest day — RBAC is HIGH priority interview topic.
-
-Good work today. Answer those 10 questions out loud before sleep.
 

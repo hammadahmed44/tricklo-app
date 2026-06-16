@@ -15,11 +15,32 @@
 // Answer: auth.js = "are you who you say you are?" (verifies JWT)
 //         rbac.js = "are you allowed to do this?" (checks role on resource)
 //         They are ALWAYS separate — composed together in route definitions.
-
-const checkRole = (...roles) => {
+const Workspace = require('../models/Workspace');
+const Board=require('../models/Board')
+const checkWorkspaceRole  = (...roles) => {
   return async (req, res, next) => {
-    next(); // remove this when you implement
+    const workspace = await Workspace.findById(req.params.id);
+        if (!workspace) return res.status(404).json({ success: false, message: 'Workspace not found' });
+const member=workspace.members.find(m=>m.user.toString()===req.user._id.toString())
+  if(!member || !roles.includes(member.role)){
+          return res.status(403).json({ success: false, message: 'Forbidden' });
+
+  }
+      next();
+
+  };
+};
+const checkBoardRole = (...roles) => {
+  return async (req, res, next) => {
+    const board = await Board.findById(req.params.id);
+    if (!board) return res.status(404).json({ success: false, message: 'Board not found' });
+
+    const member = board.members.find(m => m.user.toString() === req.user._id.toString());
+    if (!member || !roles.includes(member.role)) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    next();
   };
 };
 
-module.exports = { checkRole };
+module.exports = { checkWorkspaceRole, checkBoardRole };
